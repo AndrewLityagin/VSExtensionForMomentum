@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
+using System.Threading;
 using Mono.Cecil;
 
 namespace VSExtensionForMomentum
@@ -12,14 +13,10 @@ namespace VSExtensionForMomentum
 		private const string MOMENTUM = "Momentum",
 							 MESCRONTROL = "MEScontrol";
 
-		private BinaryFileInfo[] binaryFiles;
-
-		private BinaryFileInfo[] instanceFiles;
-
-		private int minutes = 5;
-
 		protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
 		{
+			await Logger.Activate();
+			await Logger.Clear();
 			Logger.AddLine(LogType.Info, "Replacing binaries");
 			await VS.StatusBar.ShowMessageAsync("Replacing binaries");
 			await VS.StatusBar.StartAnimationAsync(StatusAnimation.Deploy);
@@ -46,17 +43,11 @@ namespace VSExtensionForMomentum
 				await VS.StatusBar.EndAnimationAsync(StatusAnimation.Deploy);
 				return;
 			}
-
+			var minutes = 5;
 			if(settings.Minutes > 0)
 				minutes = settings.Minutes;
-
-			instanceFiles = GetFiles(instanceFolder);
-			Logger.AddLine(LogType.Info, $"Binary files in instance:{instanceFiles.Length}");
-
-			binaryFiles = GetFiles(binaryFolder);
-			Logger.AddLine(LogType.Info, $"Binary files in repos:{binaryFiles.Length}");
-
-			ReplaceCompiledFiles();
+			var (binaryFiles, instanceFiles) = await Task.Run(() => GetAllFiles(binaryFolder, instanceFolder, minutes));
+			await Task.Run(() => ReplaceCompiledFiles(binaryFiles, instanceFiles));
 			
 			Logger.AddLine(LogType.Info, "Replacing binary files is completed");
 
@@ -64,27 +55,38 @@ namespace VSExtensionForMomentum
 			await VS.StatusBar.EndAnimationAsync(StatusAnimation.Deploy);
 		}
 
-		private BinaryFileInfo[] GetFiles(string folder)
+		private BinaryFileInfo[] GetFiles(string folder, int minutes = 0)
 		{
 			var directoryInfo = new DirectoryInfo(folder);
-			var files = directoryInfo.GetFiles("*", SearchOption.AllDirectories)
+
+			DateTime currentTime = (DateTime.Now).AddMinutes(minutes * (-1));
+
+			var files = minutes > 0 ? directoryInfo.GetFiles("*", SearchOption.AllDirectories)
 									 .Where(f => f.Name.StartsWith(MOMENTUM) || f.Name.StartsWith(MESCRONTROL))
-									 .Where(f => f.Extension.Equals(".dll") || f.Extension.Equals(".exe")).ToArray();
+									 .Where(f => f.Extension.Equals(".dll") || f.Extension.Equals(".exe"))
+									 .Where(f => f.LastWriteTime >= currentTime)
+									 .ToArray()
+									 : directoryInfo.GetFiles("*", SearchOption.AllDirectories)
+									 .Where(f => f.Name.StartsWith(MOMENTUM) || f.Name.StartsWith(MESCRONTROL))
+									 .Where(f => f.Extension.Equals(".dll") || f.Extension.Equals(".exe"))
+									 .ToArray();
 
 			var binaryFiles = new List<BinaryFileInfo>();
 			foreach(var file in files)
 			{
 				try
 				{
-					AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(file.FullName);
-					var customAttribute = assembly.CustomAttributes.FirstOrDefault(c => c.AttributeType.Name == typeof(TargetFrameworkAttribute).Name);
-					binaryFiles.Add(new BinaryFileInfo()
+					using(AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(file.FullName))
 					{
-						Info = file,
-						AssemblyName = assembly.Name.Name,
-						AssemblyVersion = assembly.Name.Version,
-						TargetFramework = customAttribute != null ? (string)customAttribute.ConstructorArguments[0].Value : string.Empty,
-					});
+						var customAttribute = assembly.CustomAttributes.FirstOrDefault(c => c.AttributeType.Name == typeof(TargetFrameworkAttribute).Name);
+						binaryFiles.Add(new BinaryFileInfo()
+						{
+							Info = file,
+							AssemblyName = assembly.Name.Name,
+							AssemblyVersion = assembly.Name.Version,
+							TargetFramework = customAttribute != null ? (string)customAttribute.ConstructorArguments[0].Value : string.Empty,
+						});
+					}
 				}
 				catch(Exception ex)
 				{
@@ -99,13 +101,26 @@ namespace VSExtensionForMomentum
 			}
 			return binaryFiles.ToArray();
 		}
-		public void ReplaceCompiledFiles()
+
+		private (BinaryFileInfo[] binaryFiels, BinaryFileInfo[] instanceFiles) GetAllFiles(string binaryFolder, string instanceFolder, int minutes)
 		{
-			DateTime currentTime = (DateTime.Now).AddMinutes(minutes * (-1));
-			var modifiedFiles = binaryFiles.Where(bf => bf.Info.LastWriteTime >= currentTime).ToArray();
+			var instanceFiles = GetFiles(instanceFolder);
+			Logger.AddLine(LogType.Info, $"Binary files in instance:{instanceFiles.Length}");
+
+			var binaryFiles = GetFiles(binaryFolder, minutes);
+			Logger.AddLine(LogType.Info, $"Binary files in repos:{binaryFiles.Length}");
+
+			return (binaryFiles, instanceFiles);
+		}
+
+		private void ReplaceCompiledFiles(BinaryFileInfo[] binaryFiles, BinaryFileInfo[] instanceFiles)
+		{
 			int replacedNumber = 0;
 			int isNotReplacedNumber = 0;
-			foreach(var mf in modifiedFiles)
+			
+			var isNotReplacedFiles = new List<(BinaryFileInfo, BinaryFileInfo)>();
+
+			foreach(var mf in binaryFiles)
 			{
 				var filesToReplace = new List<BinaryFileInfo>();
 
@@ -116,25 +131,58 @@ namespace VSExtensionForMomentum
 					filesToReplace = instanceFiles.Where(ftr => ftr.AssemblyName == mf.AssemblyName
 															&& ftr.AssemblyVersion == mf.AssemblyVersion
 															&& ftr.TargetFramework == mf.TargetFramework).ToList();
-
+				
 				foreach(var ftr in filesToReplace)
 				{
-					try
-					{
-						File.Copy(mf.Info.FullName, ftr.Info.FullName, true);
-						File.Copy(mf.Info.FullName.Replace(".dll",".pdb"), ftr.Info.FullName.Replace(".dll", ".pdb"), true);
-						Logger.AddLine(LogType.Info, $"Replaced : {mf.Info.Name} -> {ftr.Info.FullName}");
-						replacedNumber++;
-					}
-					catch(Exception ex)
-					{
-						Logger.AddLine(LogType.Error, $" {ex.Message}: {mf.Info.Name} -> {ftr.Info.FullName}");
-						isNotReplacedNumber++;
-					}
+					ReplaceFile(mf, ftr, ref replacedNumber, ref isNotReplacedNumber, isNotReplacedFiles);
+				}
+			}
+			if(isNotReplacedFiles.Any())
+			{
+				Logger.AddLine(LogType.Info, $"Files are not replaced:{isNotReplacedNumber}");
+				Logger.AddLine(LogType.Info, $"Try again...");
+				foreach(var files in isNotReplacedFiles)
+				{
+					ReplaceFile(files.Item1, files.Item2, ref replacedNumber, ref isNotReplacedNumber,null);
 				}
 			}
 			Logger.AddLine(LogType.Info, $"Files replaced:{replacedNumber}");
 			Logger.AddLine(LogType.Info, $"Files are not replaced:{isNotReplacedNumber}");
+		}
+
+		private void ReplaceFile(BinaryFileInfo sourse, BinaryFileInfo target, ref int replacedNumber, ref int isNotReplacedNumber, List<(BinaryFileInfo, BinaryFileInfo)> isNotReplacedFiles)
+		{
+			try
+			{
+				File.Copy(sourse.Info.FullName, target.Info.FullName, true);
+				Logger.AddLine(LogType.Info, $"Replaced : {sourse.Info.Name} -> {target.Info.FullName}");
+				replacedNumber++;
+				if(isNotReplacedFiles == null)
+					isNotReplacedNumber--;
+			}
+			catch(Exception ex)
+			{
+				Logger.AddLine(LogType.Error, $" {ex.Message}: {sourse.Info.Name}");
+				if(isNotReplacedFiles != null)
+					isNotReplacedFiles.Add((sourse, target));
+				isNotReplacedNumber++;
+			}
+			try
+			{
+				var sourcePDBFileNameSimple = sourse.Info.Name.Replace(".dll", ".pdb");
+				var sourcePDBFileName = sourse.Info.FullName.Replace(".dll", ".pdb");
+				var targetPDBFileName = target.Info.FullName.Replace(".dll", ".pdb");
+
+				if(!File.Exists(sourcePDBFileName) || !File.Exists(targetPDBFileName))
+					return;
+
+				File.Copy(sourcePDBFileName, targetPDBFileName, true);
+				Logger.AddLine(LogType.Info, $"Replaced : {sourcePDBFileNameSimple} -> {targetPDBFileName}");
+			}
+			catch(Exception ex)
+			{
+				Logger.AddLine(LogType.Error, $" {ex.Message}");
+			}
 		}
 	}
 }

@@ -9,6 +9,8 @@ namespace VSExtensionForMomentum
 		
 		protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
 		{
+			await Logger.Activate();
+			await Logger.Clear();
 			Logger.AddLine(LogType.Info, "Replacing supervisor wwwroot folder");
 			await VS.StatusBar.ShowMessageAsync("Replacing supervisor wwwroot folder");
 			await VS.StatusBar.StartAnimationAsync(StatusAnimation.Deploy);

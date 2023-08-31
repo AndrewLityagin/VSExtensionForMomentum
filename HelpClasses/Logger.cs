@@ -26,6 +26,16 @@ namespace VSExtensionForMomentum
 			}
 			pane.WriteLine($"{Enum.GetName(typeof(LogType),logTypeValue)} {DateTime.Now} : {line}");
 		}
+
+		public static async Task Activate()
+		{
+			await pane.ActivateAsync();
+		}
+
+		public static async Task Clear()
+		{
+			await pane.ClearAsync();
+		}
 	}
 	public enum LogType
 	{
