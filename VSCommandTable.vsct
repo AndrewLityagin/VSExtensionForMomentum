@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+  <Include href="KnownImageIds.vsct"/>
+  <Include href="VSGlobals.vsct"/>
+
+  <Commands package="VSExtensionForMomentum">
+    <Groups>
+      <Group guid="VSExtensionForMomentum" id="MyMenuGroup" priority="0x0600">
+        <Parent guid="VSMainMenu" id="Tools"/>
+      </Group>
+    </Groups>
+
+    <!--This section defines the elements the user can interact with, like a menu command or a button
+        or combo box in a toolbar. -->
+    <Buttons>
+      <Button guid="VSExtensionForMomentum" id="ReplaceBinaryFiles" priority="0x0100" type="Button">
+        <Parent guid="VSExtensionForMomentum" id="MyMenuGroup" />
+        <Icon guid="ImageCatalogGuid" id="PasteAppend" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Replace binary files</ButtonText>
+          <LocCanonicalName>.VSExtensionForMomentum.ReplaceBinaryFiles</LocCanonicalName>
+        </Strings>
+      </Button>
+    <Button guid="VSExtensionForMomentum" id="ReplaceSupervisorFiles" priority="0x0200" type="Button">
+	    <Parent guid="VSExtensionForMomentum" id="MyMenuGroup" />
+	    <Icon guid="ImageCatalogGuid" id="PasteReplace" />
+	    <CommandFlag>IconIsMoniker</CommandFlag>
+	    <Strings>
+		    <ButtonText>Replace Supervisor wwwroot folder</ButtonText>
+		    <LocCanonicalName>.VSExtensionForMomentum.ReplaceSupervisorFiles</LocCanonicalName>
+	    </Strings>
+    </Button>
+	  </Buttons>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="VSExtensionForMomentum" value="{a8833f24-18b7-4a3c-b2b9-d1a3b6a45b58}">
+      <IDSymbol name="MyMenuGroup" value="0x0001" />
+      <IDSymbol name="ReplaceBinaryFiles" value="0x0100" />
+      <IDSymbol name="ReplaceSupervisorFiles" value="0x0200" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>
