@@ -17,7 +17,7 @@ namespace VSExtensionForMomentum
 
 			var settings = await Settings.GetLiveInstanceAsync();
 
-			var supervisorInstanceFolder = settings.InstanceFolder + "\\WebServer\\Default\\Momentum.Web.Supervisor\\wwwroot";
+			var supervisorInstanceFolder = settings.InstanceFolder + "\\WebServer\\Default\\Momentum.Supervisor\\wwwroot";
 			var supervisorBinaryFolder = settings.RepositoryFolder + "\\Binaries\\Web\\Momentum.Web.Supervisor\\net6.0\\publish\\wwwroot";
 
 			if(!Directory.Exists(supervisorInstanceFolder))
