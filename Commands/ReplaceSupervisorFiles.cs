@@ -11,8 +11,8 @@ namespace VSExtensionForMomentum
 		{
 			await Logger.Activate();
 			await Logger.Clear();
-			Logger.AddLine(LogType.Info, "Replacing supervisor wwwroot folder");
-			await VS.StatusBar.ShowMessageAsync("Replacing supervisor wwwroot folder");
+			Logger.AddLine(LogType.Info, "Replacing files from supervisor  wwwroot folder");
+			await VS.StatusBar.ShowMessageAsync("Replacing files from supervisor wwwroot folder");
 			await VS.StatusBar.StartAnimationAsync(StatusAnimation.Deploy);
 
 			var settings = await Settings.GetLiveInstanceAsync();
@@ -24,7 +24,7 @@ namespace VSExtensionForMomentum
 			{
 				await VS.StatusBar.EndAnimationAsync(StatusAnimation.Deploy);
 				Logger.AddLine(LogType.Error, $"Folder with supervisor in instance is not find : {supervisorInstanceFolder}");
-				await VS.StatusBar.ShowMessageAsync("Replacing supervisor  wwwroot folder is  failed");
+				await VS.StatusBar.ShowMessageAsync("Replacing files from supervisor  wwwroot folder is  failed");
 				await VS.StatusBar.EndAnimationAsync(StatusAnimation.Deploy);
 				return;
 			}
@@ -33,7 +33,7 @@ namespace VSExtensionForMomentum
 			{
 				await VS.StatusBar.EndAnimationAsync(StatusAnimation.Deploy);
 				Logger.AddLine(LogType.Error, $"Folder with supervisor in repository is not find : {supervisorBinaryFolder}");
-				await VS.StatusBar.ShowMessageAsync("Replacing supervisor  wwwroot folder is failed");
+				await VS.StatusBar.ShowMessageAsync("Replacing files from supervisor  wwwroot folder is failed");
 				await VS.StatusBar.EndAnimationAsync(StatusAnimation.Deploy);
 				return;
 			}
@@ -43,7 +43,7 @@ namespace VSExtensionForMomentum
 				try
 				{
 					var newFileName = file.Replace(supervisorBinaryFolder, supervisorInstanceFolder);
-					File.Replace(file, newFileName, "");
+					File.Replace(file, newFileName, file);
 					Logger.AddLine(LogType.Info, $"{file} -> {newFileName}");
 				}
 				catch
@@ -51,9 +51,9 @@ namespace VSExtensionForMomentum
 					Logger.AddLine(LogType.Error, $"File is not find : {file}");
 				}
 			}
-			Logger.AddLine(LogType.Info, "Replacing supervisor wwwroot folder is completed");
+			Logger.AddLine(LogType.Info, "Replacing files from supervisor wwwroot folder is completed");
 
-			await VS.StatusBar.ShowMessageAsync("Replacing supervisor wwwroot folder is  completed");
+			await VS.StatusBar.ShowMessageAsync("Replacing files from supervisor wwwroot folder is  completed");
 			await VS.StatusBar.EndAnimationAsync(StatusAnimation.Deploy);
 		}
 	}
