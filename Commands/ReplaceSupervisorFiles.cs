@@ -43,12 +43,13 @@ namespace VSExtensionForMomentum
 				try
 				{
 					var newFileName = file.Replace(supervisorBinaryFolder, supervisorInstanceFolder);
-					File.Replace(file, newFileName, file);
-					Logger.AddLine(LogType.Info, $"{file} -> {newFileName}");
+					File.Delete(newFileName);
+					File.Copy(file,newFileName);
+					Logger.AddLine(LogType.Info, $" Replaced: {file} -> {newFileName}");
 				}
-				catch
+				catch(Exception ex)
 				{
-					Logger.AddLine(LogType.Error, $"File is not find : {file}");
+					Logger.AddLine(LogType.Error, $"Exception : {ex.Message}");
 				}
 			}
 			Logger.AddLine(LogType.Info, "Replacing files from supervisor wwwroot folder is completed");
