@@ -40,5 +40,17 @@ namespace VSExtensionForMomentum
 		[Description("Time period for searching updated binary files")]
 		[DefaultValue(5)]
 		public int Minutes { get; set; }
+
+		[Category("General")]
+		[DisplayName("Custom source folder")]
+		[Description("Custom folder which contains files which will be use for replacing")]
+		[DefaultValue("")]
+		public string CustomSourceFolder { get; set; }
+
+		[Category("General")]
+		[DisplayName("Custom target folder")]
+		[Description("Custom folder where files will be replaced")]
+		[DefaultValue("")]
+		public string CustomTargetFolder { get; set; }
 	}
 }

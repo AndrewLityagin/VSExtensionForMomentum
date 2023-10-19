@@ -34,6 +34,15 @@
 		    <LocCanonicalName>.VSExtensionForMomentum.ReplaceSupervisorFiles</LocCanonicalName>
 	    </Strings>
     </Button>
+	<Button guid="VSExtensionForMomentum" id="ReplaceCustomFolderFiles" priority="0x0300" type="Button">
+		<Parent guid="VSExtensionForMomentum" id="MyMenuGroup" />
+		<Icon guid="ImageCatalogGuid" id="MoveToFolder" />
+		<CommandFlag>IconIsMoniker</CommandFlag>
+		<Strings>
+			<ButtonText>Replace custom folder</ButtonText>
+			<LocCanonicalName>.VSExtensionForMomentum.ReplaceSupervisorFiles</LocCanonicalName>
+		</Strings>
+	</Button>
 	  </Buttons>
   </Commands>
 
@@ -42,6 +51,7 @@
       <IDSymbol name="MyMenuGroup" value="0x0001" />
       <IDSymbol name="ReplaceBinaryFiles" value="0x0100" />
       <IDSymbol name="ReplaceSupervisorFiles" value="0x0200" />
+	  <IDSymbol name="ReplaceCustomFolderFiles" value="0x0300" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>

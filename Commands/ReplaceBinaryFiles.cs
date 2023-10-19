@@ -143,7 +143,7 @@ namespace VSExtensionForMomentum
 				Logger.AddLine(LogType.Info, $"Try again...");
 				foreach(var files in isNotReplacedFiles)
 				{
-					ReplaceFile(files.Item1, files.Item2, ref replacedNumber, ref isNotReplacedNumber,null);
+					ReplaceFile(files.Item1, files.Item2, ref replacedNumber, ref isNotReplacedNumber, null);
 				}
 			}
 			Logger.AddLine(LogType.Info, $"Files replaced:{replacedNumber}");
@@ -164,9 +164,12 @@ namespace VSExtensionForMomentum
 			{
 				Logger.AddLine(LogType.Error, $" {ex.Message}: {sourse.Info.Name}");
 				if(isNotReplacedFiles != null)
+				{
 					isNotReplacedFiles.Add((sourse, target));
-				isNotReplacedNumber++;
+					isNotReplacedNumber++;
+				}
 			}
+
 			try
 			{
 				var sourcePDBFileNameSimple = sourse.Info.Name.Replace(".dll", ".pdb");
@@ -177,7 +180,6 @@ namespace VSExtensionForMomentum
 					return;
 
 				File.Copy(sourcePDBFileName, targetPDBFileName, true);
-				Logger.AddLine(LogType.Info, $"Replaced : {sourcePDBFileNameSimple} -> {targetPDBFileName}");
 			}
 			catch(Exception ex)
 			{

@@ -37,9 +37,20 @@ namespace VSExtensionForMomentum
 				await VS.StatusBar.EndAnimationAsync(StatusAnimation.Deploy);
 				return;
 			}
-
-			Directory.Delete(supervisorInstanceFolder, true);
-			Directory.Move(supervisorBinaryFolder, supervisorInstanceFolder);
+			var files = Directory.GetFiles(supervisorBinaryFolder, "*.*", SearchOption.AllDirectories);
+			foreach(var file in files)
+			{
+				try
+				{
+					var newFileName = file.Replace(supervisorBinaryFolder, supervisorInstanceFolder);
+					File.Replace(file, newFileName, "");
+					Logger.AddLine(LogType.Info, $"{file} -> {newFileName}");
+				}
+				catch
+				{
+					Logger.AddLine(LogType.Error, $"File is not find : {file}");
+				}
+			}
 			Logger.AddLine(LogType.Info, "Replacing supervisor wwwroot folder is completed");
 
 			await VS.StatusBar.ShowMessageAsync("Replacing supervisor wwwroot folder is  completed");

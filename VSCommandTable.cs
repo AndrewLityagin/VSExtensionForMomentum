@@ -23,5 +23,6 @@ namespace VSExtensionForMomentum
 		public const int MyMenuGroup = 0x0001;
 		public const int ReplaceBinaryFiles = 0x0100;
 		public const int ReplaceSupervisorFiles = 0x0200;
+		public const int ReplaceCustomFolderFiles = 0x0300;
 	}
 }
