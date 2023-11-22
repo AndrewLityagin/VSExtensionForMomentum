@@ -13,6 +13,8 @@ namespace VSExtensionForMomentum
 		private const string MOMENTUM = "Momentum",
 							 MESCRONTROL = "MEScontrol";
 
+		private string customProjectName = string.Empty;
+
 		protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
 		{
 			await Logger.Activate();
@@ -23,7 +25,8 @@ namespace VSExtensionForMomentum
 
 			var settings = await Settings.GetLiveInstanceAsync();
 
-			var instanceFolder = settings.InstanceFolder;
+			this.customProjectName = settings.CustomProjectName;
+            var instanceFolder = settings.InstanceFolder;
 			var binaryFolder = settings.RepositoryFolder + "\\Binaries";
 
 			if(!Directory.Exists(instanceFolder))
@@ -62,12 +65,12 @@ namespace VSExtensionForMomentum
 			DateTime currentTime = (DateTime.Now).AddMinutes(minutes * (-1));
 
 			var files = minutes > 0 ? directoryInfo.GetFiles("*", SearchOption.AllDirectories)
-									 .Where(f => f.Name.StartsWith(MOMENTUM) || f.Name.StartsWith(MESCRONTROL))
+									 .Where(f => f.Name.StartsWith(MOMENTUM) || f.Name.StartsWith(MESCRONTROL) || f.Name.StartsWith(customProjectName))
 									 .Where(f => f.Extension.Equals(".dll") || f.Extension.Equals(".exe"))
 									 .Where(f => f.LastWriteTime >= currentTime)
 									 .ToArray()
 									 : directoryInfo.GetFiles("*", SearchOption.AllDirectories)
-									 .Where(f => f.Name.StartsWith(MOMENTUM) || f.Name.StartsWith(MESCRONTROL))
+									 .Where(f => f.Name.StartsWith(MOMENTUM) || f.Name.StartsWith(MESCRONTROL) || f.Name.StartsWith(customProjectName))
 									 .Where(f => f.Extension.Equals(".dll") || f.Extension.Equals(".exe"))
 									 .ToArray();
 

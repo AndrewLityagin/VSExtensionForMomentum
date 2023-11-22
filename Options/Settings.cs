@@ -52,5 +52,12 @@ namespace VSExtensionForMomentum
 		[Description("Custom folder where files will be replaced")]
 		[DefaultValue("")]
 		public string CustomTargetFolder { get; set; }
-	}
+
+
+        [Category("General")]
+        [DisplayName("Custom project name")]
+        [Description("Custom project which files will be replaced")]
+        [DefaultValue("")]
+        public string CustomProjectName { get; set; }
+    }
 }
