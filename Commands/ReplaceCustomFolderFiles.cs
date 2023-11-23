@@ -38,11 +38,24 @@ namespace VSExtensionForMomentum
 				return;
 			}
 
-			Directory.Delete(targetFolder, true);
-			Directory.Move(sourceFolder, targetFolder);
-			Logger.AddLine(LogType.Info, "Replacing custom folder is completed");
+			var files = Directory.GetFiles(sourceFolder, "*.*", SearchOption.AllDirectories);
+			foreach(var file in files)
+			{
+				try
+				{
+					var newFileName = file.Replace(sourceFolder, targetFolder);
+					File.Delete(newFileName);
+					File.Copy(file, newFileName);
+					Logger.AddLine(LogType.Info, $" Replaced: {file} -> {newFileName}");
+				}
+				catch(Exception ex)
+				{
+					Logger.AddLine(LogType.Error, $"Exception : {ex.Message}");
+				}
+			}
+			Logger.AddLine(LogType.Info, "Replacing files from custom folder is completed");
 
-			await VS.StatusBar.ShowMessageAsync("Replacing custom folder is completed");
+			await VS.StatusBar.ShowMessageAsync("Replacing files from custom folder is completed");
 			await VS.StatusBar.EndAnimationAsync(StatusAnimation.Deploy);
 		}
 	}
