@@ -12,7 +12,9 @@ How to start:
 - _Repository folder_ : Folder with repository of MEScontrol.net Standard or Extensions or Custom project.
 5. Build your project
 6. Open Tools and run command "_Replace binary files_"
-![Screenshot 2024-02-23 215106](https://github.com/AndrewLityagin/VSExtensionForMomentum/assets/99161672/3072d560-6278-4d76-8403-603ac69bdc98)
+  
+![Screenshot 2024-02-23 215106](https://github.com/AndrewLityagin/VSExtensionForMomentum/assets/99161672/9315197c-287e-4ac1-9562-cdb3e05a54fb)
+
 7. Builded files will be replaced. You can see result in Output log 
 ![image](https://github.com/AndrewLityagin/VSExtensionForMomentum/assets/99161672/8c4cea89-ca3a-4b0d-929a-61c1e3759bab)
 
