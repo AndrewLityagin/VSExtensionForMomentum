@@ -1,4 +1,4 @@
-This is Visual Studio Extension for replacing .dll, .exe and resource files from repository into BrightEye's Momentum Instance. It will be actual for developers and integrators of Momentum. 
+This is Visual Studio Extension for replacing .dll, .exe and resource files from repository into BrightEye's Momentum Instance. It is actual for developers and integrators of Momentum. 
 How to start:
 1. Clone repos and compile project. Compilation required component "_Visual Studio extension development_".
 2. Install *.vsix file.
