@@ -24,5 +24,6 @@ namespace VSExtensionForMomentum
 		public const int ReplaceBinaryFiles = 0x0100;
 		public const int ReplaceSupervisorFiles = 0x0200;
 		public const int ReplaceCustomFolderFiles = 0x0300;
-	}
+        public const int ReplaceOperatorFiles = 0x0400;
+    }
 }

@@ -53,11 +53,22 @@ namespace VSExtensionForMomentum
 		[DefaultValue("")]
 		public string CustomTargetFolder { get; set; }
 
-
         [Category("General")]
         [DisplayName("Custom project name")]
         [Description("Custom project which files will be replaced")]
         [DefaultValue("")]
         public string CustomProjectName { get; set; }
+
+        [Category("General")]
+        [DisplayName(".Net version")]
+        [Description("Version of .Net for replacing web projects (net6.0 / net 8.0)")]
+        [DefaultValue("net8.0")]
+        public string NetVersion { get; set; }
+
+        [Category("General")]
+        [DisplayName("Kill the locking process")]
+        [Description("Kill the process that locks files")]
+        [DefaultValue(false)]
+        public bool KillProcess { get; set; }
     }
 }

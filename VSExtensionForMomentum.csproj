@@ -46,8 +46,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Commands\ReplaceCustomFolderFiles.cs" />
+    <Compile Include="Commands\ReplaceOperatorFiles.cs" />
     <Compile Include="Commands\ReplaceSupervisorFiles.cs" />
     <Compile Include="HelpClasses\BinaryFileInfo.cs" />
+    <Compile Include="HelpClasses\ProcessKiller.cs" />
     <Compile Include="HelpClasses\Logger.cs" />
     <Compile Include="Options\Settings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

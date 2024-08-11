@@ -14,8 +14,8 @@ namespace VSExtensionForMomentum
 							 MESCRONTROL = "MEScontrol";
 
 		private string customProjectName = string.Empty;
-
-		protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
+		private Settings settings;
+        protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
 		{
 			await Logger.Activate();
 			await Logger.Clear();
@@ -23,7 +23,7 @@ namespace VSExtensionForMomentum
 			await VS.StatusBar.ShowMessageAsync("Replacing binaries");
 			await VS.StatusBar.StartAnimationAsync(StatusAnimation.Deploy);
 
-			var settings = await Settings.GetLiveInstanceAsync();
+			settings = await Settings.GetLiveInstanceAsync();
 
 			this.customProjectName = settings.CustomProjectName;
             var instanceFolder = settings.InstanceFolder;
@@ -116,7 +116,7 @@ namespace VSExtensionForMomentum
 			return (binaryFiles, instanceFiles);
 		}
 
-		private void ReplaceCompiledFiles(BinaryFileInfo[] binaryFiles, BinaryFileInfo[] instanceFiles)
+		private async void ReplaceCompiledFiles(BinaryFileInfo[] binaryFiles, BinaryFileInfo[] instanceFiles)
 		{
 			int replacedNumber = 0;
 			int isNotReplacedNumber = 0;
@@ -125,7 +125,7 @@ namespace VSExtensionForMomentum
 
 			foreach(var mf in binaryFiles)
 			{
-				var filesToReplace = new List<BinaryFileInfo>();
+				List<BinaryFileInfo> filesToReplace;
 
 				if(mf.IsUnreadableAssembly)
 					filesToReplace = instanceFiles.Where(ftr => ftr.IsUnreadableAssembly)
@@ -144,10 +144,15 @@ namespace VSExtensionForMomentum
 			{
 				Logger.AddLine(LogType.Info, $"Files are not replaced:{isNotReplacedNumber}");
 				Logger.AddLine(LogType.Info, $"Try again...");
-				foreach(var files in isNotReplacedFiles)
+
+				if(settings.KillProcess)
 				{
-					ReplaceFile(files.Item1, files.Item2, ref replacedNumber, ref isNotReplacedNumber, null);
+					foreach(var files in isNotReplacedFiles)
+						ProcessKiller.Kill(files.Item2);
 				}
+				await Task.Delay(1000);
+				foreach(var files in isNotReplacedFiles)
+					ReplaceFile(files.Item1, files.Item2, ref replacedNumber, ref isNotReplacedNumber, null);
 			}
 			Logger.AddLine(LogType.Info, $"Files replaced:{replacedNumber}");
 			Logger.AddLine(LogType.Info, $"Files are not replaced:{isNotReplacedNumber}");
