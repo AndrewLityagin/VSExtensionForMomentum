@@ -51,10 +51,6 @@ namespace VSExtensionForMomentum
 				minutes = settings.Minutes;
 			var (binaryFiles, instanceFiles) = await Task.Run(() => GetAllFiles(binaryFolder, instanceFolder, minutes));
 			await Task.Run(() => ReplaceCompiledFiles(binaryFiles, instanceFiles));
-			
-			Logger.AddLine(LogType.Info, "Replacing binary files is completed");
-
-			await VS.StatusBar.ShowMessageAsync("Replacing binaries complete");
 			await VS.StatusBar.EndAnimationAsync(StatusAnimation.Deploy);
 		}
 
@@ -144,16 +140,21 @@ namespace VSExtensionForMomentum
 			{
 				Logger.AddLine(LogType.Info, $"Files are not replaced:{isNotReplacedNumber}");
 				Logger.AddLine(LogType.Info, $"Try again...");
+				ProcessWorker pWorker = new ProcessWorker(settings.InstanceFolder);
 
-				if(settings.KillProcess)
-				{
+				if(settings.KillProcess){
 					foreach(var files in isNotReplacedFiles)
-						ProcessKiller.Kill(files.Item2);
+                        pWorker.Kill(files.Item2);
 				}
+
 				await Task.Delay(1000);
 				foreach(var files in isNotReplacedFiles)
 					ReplaceFile(files.Item1, files.Item2, ref replacedNumber, ref isNotReplacedNumber, null);
-			}
+
+                if(settings.StartProcesses)
+                    pWorker.RestartProcesses();
+
+            }
 			Logger.AddLine(LogType.Info, $"Files replaced:{replacedNumber}");
 			Logger.AddLine(LogType.Info, $"Files are not replaced:{isNotReplacedNumber}");
 		}

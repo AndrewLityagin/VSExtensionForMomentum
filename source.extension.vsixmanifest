@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="VSExtensionForMomentum.9add7f25-b6c6-4f78-bdef-b2ca1319876a" Version="1.1" Language="en-US" Publisher="Andrey Lityagin" />
+        <Identity Id="VSExtensionForMomentum.9add7f25-b6c6-4f78-bdef-b2ca1319876a" Version="1.2.3" Language="en-US" Publisher="Andrey Lityagin" />
         <DisplayName>VSExtensionForMomentum</DisplayName>
         <Description xml:space="preserve">Visual Studio Extension for replace *.dll and *.pdb files from  Momentum servers to repository files.</Description>
+        <MoreInfo>https://github.com/AndrewLityagin/VSExtensionForMomentum</MoreInfo>
         <Icon>Resources\Icon.png</Icon>
         <PreviewImage>Resources\Icon.png</PreviewImage>
     </Metadata>

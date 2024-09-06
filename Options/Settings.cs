@@ -70,5 +70,11 @@ namespace VSExtensionForMomentum
         [Description("Kill the process that locks files")]
         [DefaultValue(false)]
         public bool KillProcess { get; set; }
+
+        [Category("General")]
+        [DisplayName("Start processes")]
+        [Description("Start killed processes")]
+        [DefaultValue(false)]
+        public bool StartProcesses { get; set; }
     }
 }
