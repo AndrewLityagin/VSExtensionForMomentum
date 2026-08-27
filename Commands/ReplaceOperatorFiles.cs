@@ -15,7 +15,7 @@ namespace VSExtensionForMomentum
 			await VS.StatusBar.ShowMessageAsync("Replacing files from Operator wwwroot folder");
 			await VS.StatusBar.StartAnimationAsync(StatusAnimation.Deploy);
 
-			var settings = await Settings.GetLiveInstanceAsync();
+			var settings = await ResolvedSettings.ResolveAsync();
 
 			var OperatorInstanceFolder = $"{settings.InstanceFolder}\\WebServer\\Default\\Momentum.Operator\\wwwroot";
 			var OperatorBinaryFolder = $"{settings.RepositoryFolder}\\Binaries\\Web\\Momentum.Web.Operator\\{settings.NetVersion}\\publish\\wwwroot";
