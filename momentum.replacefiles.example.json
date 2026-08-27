@@ -1,0 +1,8 @@
+﻿{
+  "RepositoryFolder": ".",
+  "InstanceFolder": "C:\\Path\\To\\Your\\Momentum\\Instance",
+  "NetVersion": "net8.0",
+  "Minutes": 20,
+  "KillProcess": true,
+  "StartProcesses": true
+}
