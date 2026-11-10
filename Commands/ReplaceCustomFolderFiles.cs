@@ -9,13 +9,14 @@ namespace VSExtensionForMomentum
 		
 		protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
 		{
-			var settings = await Settings.GetLiveInstanceAsync();
+			await Logger.Activate();
+			await Logger.Clear();
+
+			var settings = await ResolvedSettings.ResolveAsync();
 
 			var sourceFolder = settings.CustomSourceFolder;
 			var targetFolder = settings.CustomTargetFolder;
 
-			await Logger.Activate();
-			await Logger.Clear();
 			Logger.AddLine(LogType.Info, $"Replacing files from {sourceFolder} to {targetFolder}");
 			await VS.StatusBar.ShowMessageAsync("Replacing custom folder");
 			await VS.StatusBar.StartAnimationAsync(StatusAnimation.Deploy);

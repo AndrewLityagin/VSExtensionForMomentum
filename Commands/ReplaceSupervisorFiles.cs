@@ -15,7 +15,7 @@ namespace VSExtensionForMomentum
 			await VS.StatusBar.ShowMessageAsync("Replacing files from supervisor wwwroot folder");
 			await VS.StatusBar.StartAnimationAsync(StatusAnimation.Deploy);
 
-			var settings = await Settings.GetLiveInstanceAsync();
+			var settings = await ResolvedSettings.ResolveAsync();
 
 			var supervisorInstanceFolder = $"{settings.InstanceFolder}\\WebServer\\Default\\Momentum.Supervisor\\wwwroot";
 			var supervisorBinaryFolder = $"{settings.RepositoryFolder}\\Binaries\\Web\\Momentum.Web.Supervisor\\{settings.NetVersion}\\publish\\wwwroot";

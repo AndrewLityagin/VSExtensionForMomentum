@@ -14,7 +14,7 @@ namespace VSExtensionForMomentum
 							 MESCRONTROL = "MEScontrol";
 
 		private string customProjectName = string.Empty;
-		private Settings settings;
+		private ResolvedSettings settings;
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
 		{
 			await Logger.Activate();
@@ -23,7 +23,7 @@ namespace VSExtensionForMomentum
 			await VS.StatusBar.ShowMessageAsync("Replacing binaries");
 			await VS.StatusBar.StartAnimationAsync(StatusAnimation.Deploy);
 
-			settings = await Settings.GetLiveInstanceAsync();
+			settings = await ResolvedSettings.ResolveAsync();
 
 			this.customProjectName = settings.CustomProjectName;
             var instanceFolder = settings.InstanceFolder;
